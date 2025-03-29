@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TrenchCard - Solana Wallet PNL Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <div class="container">
+    <header class="text-center my-5">
+      <img src="/img/logo.png" alt="TrenchCard Logo" class="logo mb-4">
+      <h1 class="blue-text">TrenchCard</h1>
+      <p class="lead">Generate shareable PNL cards for your Solana wallet</p>
+    </header>
+
+    <div class="card main-card">
+      <div class="card-body">
+        <form id="wallet-form">
+          <div class="mb-4">
+            <label for="wallet-address" class="form-label blue-text">Enter your Solana wallet address</label>
+            <div class="input-group">
+              <input type="text" class="form-control" id="wallet-address" placeholder="e.g. 7C4jsPZpht42Tw6MjXWF56Q5RQUocjBBmciEjDa8HRtp" required>
+              <button type="submit" class="btn btn-primary" id="generate-btn">
+                <span class="normal-state">GENERATE</span>
+                <span class="loading-state d-none">
+                  <span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>
+                  GENERATING...
+                </span>
+              </button>
+            </div>
+            <div class="form-text mt-2">Your Solana wallet address will be used to fetch transaction data.</div>
+          </div>
+          
+          <div class="form-check mb-3">
+            <input class="form-check-input" type="checkbox" id="hide-balance">
+            <label class="form-check-label" for="hide-balance">
+              Hide balance information (show only % changes)
+            </label>
+          </div>
+        </form>
+
+        <div id="error-message" class="alert alert-danger d-none" role="alert"></div>
+
+        <div id="result-section" class="text-center d-none mt-5">
+          <h3 class="mb-4 blue-text">YOUR TRENCHCARD</h3>
+          <div class="card-preview mb-4">
+            <img id="pnl-card" src="" alt="PNL Card" class="img-fluid">
+          </div>
+          <div class="action-buttons">
+            <a id="download-btn" href="#" class="btn btn-success me-3">
+              <i class="fas fa-download me-2"></i> DOWNLOAD
+            </a>
+            <a id="tweet-btn" href="#" target="_blank" class="btn btn-info">
+              <i class="fab fa-twitter me-2"></i> SHARE
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="how-it-works mt-5 mb-4">
+      <h2 class="text-center mb-4 blue-text">How It Works</h2>
+      <div class="row g-4">
+        <div class="col-md-4">
+          <div class="feature-card text-center">
+            <div class="icon-wrapper mb-3">
+              <i class="fas fa-wallet fa-2x"></i>
+            </div>
+            <h3 class="blue-text">Enter Wallet</h3>
+            <p>Simply paste your Solana wallet address in the input field above.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card text-center">
+            <div class="icon-wrapper mb-3">
+              <i class="fas fa-chart-line fa-2x"></i>
+            </div>
+            <h3 class="blue-text">Generate Card</h3>
+            <p>We'll fetch your wallet data and calculate your Profit & Loss metrics.</p>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="feature-card text-center">
+            <div class="icon-wrapper mb-3">
+              <i class="fas fa-share-alt fa-2x"></i>
+            </div>
+            <h3 class="blue-text">Share Results</h3>
+            <p>Download your PNL card or share it directly on Twitter with your followers.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <footer class="text-center mt-5 pb-4">
+      <p>&copy; 2025 TrenchCard.</p>
+    </footer>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="/js/main.js"></script>
+</body>
+</html> 

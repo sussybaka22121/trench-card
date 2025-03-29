@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: trenchcard
+    env: node
+    buildCommand: ./render-build.sh
+    startCommand: node index.js
+    envVars:
+      - key: PORT
+        value: 8080
+      - key: NODE_ENV
+        value: production
+    plan: starter # You can use "free" for the free tier or "starter" for the paid tier
+    autoDeploy: true 
