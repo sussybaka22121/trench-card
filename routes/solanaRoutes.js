@@ -4,6 +4,7 @@ const nodeHtmlToImage = require('node-html-to-image');
 const path = require('path');
 const fs = require('fs');
 const axios = require('axios');
+const puppeteerConfig = require('../puppeteer-config');
 
 const router = express.Router();
 
@@ -511,9 +512,7 @@ router.get('/generate/:address', async (req, res) => {
       html,
       quality: 100,
       type: 'png',
-      puppeteerArgs: {
-        args: ['--no-sandbox', '--disable-setuid-sandbox']
-      }
+      puppeteerArgs: puppeteerConfig
     });
     
     res.set('Content-Type', 'image/png');

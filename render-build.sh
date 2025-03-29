@@ -1,56 +1,22 @@
 #!/usr/bin/env bash
+# Exit on error
+set -e
+
 # Install dependencies
-npm install
+npm ci
 
-# Install Chrome and dependencies needed for Puppeteer
-apt-get update
-apt-get install -y \
-    fonts-liberation \
-    gconf-service \
-    libappindicator1 \
-    libasound2 \
-    libatk1.0-0 \
-    libcairo2 \
-    libcups2 \
-    libfontconfig1 \
-    libgbm-dev \
-    libgdk-pixbuf2.0-0 \
-    libgtk-3-0 \
-    libicu-dev \
-    libjpeg-dev \
-    libnspr4 \
-    libnss3 \
-    libpango-1.0-0 \
-    libpangocairo-1.0-0 \
-    libpng-dev \
-    libx11-6 \
-    libx11-xcb1 \
-    libxcb1 \
-    libxcomposite1 \
-    libxcursor1 \
-    libxdamage1 \
-    libxext6 \
-    libxfixes3 \
-    libxi6 \
-    libxrandr2 \
-    libxrender1 \
-    libxss1 \
-    libxtst6 \
-    xdg-utils
+# Install Chrome for Puppeteer
+npx puppeteer browsers install chrome
 
-# Install Chrome
-wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-dpkg -i google-chrome-stable_current_amd64.deb
-apt-get install -y -f
+# Print verification that Chrome is installed
+echo "Verifying Chrome installation..."
+CHROME_PATH="/opt/render/.cache/puppeteer/chrome/linux-127.0.6533.88/chrome-linux64/chrome"
 
-# Set the Puppeteer executable path
-echo "export PUPPETEER_EXECUTABLE_PATH=$(which google-chrome)" >> $HOME/.bashrc
-echo "export PUPPETEER_EXECUTABLE_PATH=$(which google-chrome)" >> $HOME/.profile
-export PUPPETEER_EXECUTABLE_PATH=$(which google-chrome)
+if [ -f "$CHROME_PATH" ]; then
+  echo "Chrome is installed at $CHROME_PATH"
+else
+  echo "Chrome installation failed. Looking for Chrome in cache directory..."
+  find /opt/render/.cache/puppeteer -type f -name "chrome" -o -name "chromium"
+fi
 
-# Skip Puppeteer download since we installed Chrome manually
-export PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-npm install puppeteer
-
-# Make the script executable
-chmod +x render-build.sh 
+echo "Build completed" 
