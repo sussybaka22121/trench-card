@@ -5,18 +5,23 @@ set -e
 # Install dependencies
 npm ci
 
-# Install Chrome for Puppeteer
-npx puppeteer browsers install chrome
+# Install Chrome specifically
+echo "Installing Chrome..."
+npx puppeteer install
 
-# Print verification that Chrome is installed
-echo "Verifying Chrome installation..."
-CHROME_PATH="/opt/render/.cache/puppeteer/chrome/linux-127.0.6533.88/chrome-linux64/chrome"
+# Verify installation
+echo "Chrome installation completed, checking..."
+CHROME_PATH=$(node -e "console.log(require('puppeteer').executablePath())")
 
 if [ -f "$CHROME_PATH" ]; then
-  echo "Chrome is installed at $CHROME_PATH"
+  echo "Chrome successfully installed at $CHROME_PATH"
+  # Save the path for our app to use
+  echo "export PUPPETEER_EXECUTABLE_PATH=$CHROME_PATH" >> ~/.bashrc
+  export PUPPETEER_EXECUTABLE_PATH=$CHROME_PATH
 else
-  echo "Chrome installation failed. Looking for Chrome in cache directory..."
-  find /opt/render/.cache/puppeteer -type f -name "chrome" -o -name "chromium"
+  echo "Chrome installation failed"
+  find /opt/render/.cache -name "chrome" -type f
+  exit 1
 fi
 
 echo "Build completed" 
