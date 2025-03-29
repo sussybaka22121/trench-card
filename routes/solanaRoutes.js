@@ -512,7 +512,17 @@ router.get('/generate/:address', async (req, res) => {
       html,
       quality: 100,
       type: 'png',
-      puppeteerArgs: puppeteerConfig
+      puppeteerArgs: {
+        args: [
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu',
+          '--single-process'
+        ],
+        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
+        headless: true
+      }
     });
     
     res.set('Content-Type', 'image/png');
