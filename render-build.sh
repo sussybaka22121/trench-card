@@ -5,34 +5,47 @@ set -e
 # Install dependencies
 npm ci
 
-# Install Chrome explicitly with browsers command
-echo "Installing Chrome..."
+# Install Chrome with multiple approaches
+echo "Installing Chrome via Puppeteer..."
+# Method 1: Use npx puppeteer
 npx puppeteer browsers install chrome
+echo "Chrome installation via Puppeteer completed"
 
-# Find the installed Chrome path
-echo "Locating Chrome installation..."
-CHROME_DIR=$(find /opt/render/.cache/puppeteer -type d -name "chrome-linux*" | head -n 1)
+# Method 2: Direct download as fallback
+echo "Installing puppeteer-chromium-resolver..."
+npm install puppeteer-chromium-resolver --save
+echo "Puppeteer-chromium-resolver installed"
 
-if [ -n "$CHROME_DIR" ]; then
-  CHROME_PATH="$CHROME_DIR/chrome"
-  echo "Chrome directory found at: $CHROME_DIR"
-  echo "Chrome executable should be at: $CHROME_PATH"
+# Find all Chrome installations
+echo "Searching for Chrome installations..."
+CHROME_PATHS=$(find /opt/render/.cache -name "chrome" -type f -executable | grep -v "nacl_helper")
+
+if [ -n "$CHROME_PATHS" ]; then
+  echo "Found Chrome executables at:"
+  echo "$CHROME_PATHS"
   
-  # Make Chrome executable
-  chmod +x "$CHROME_PATH"
+  # Use the first found Chrome
+  CHROME_PATH=$(echo "$CHROME_PATHS" | head -n 1)
   
-  # Save path to environment for runtime
+  # Make all Chrome binaries executable
+  for chrome in $CHROME_PATHS; do
+    chmod +x "$chrome"
+    echo "Made executable: $chrome"
+  done
+  
+  # Save Chrome path to environment
   echo "export PUPPETEER_EXECUTABLE_PATH=$CHROME_PATH" >> $HOME/.bashrc
   echo "export PUPPETEER_EXECUTABLE_PATH=$CHROME_PATH" >> $HOME/.profile
   
-  # Create permanent environment variable on Render
+  # Create render env var file
   mkdir -p /opt/render/project/.render/
-  echo "PUPPETEER_EXECUTABLE_PATH=$CHROME_PATH" >> /opt/render/project/.render/env
+  echo "PUPPETEER_EXECUTABLE_PATH=$CHROME_PATH" > /opt/render/project/.render/env
+  
+  echo "Chrome executable path set to: $CHROME_PATH"
 else
-  echo "Chrome installation not found! Searching for any Chrome binaries..."
-  find /opt/render/.cache -name "chrome" -type f
-  echo "Failed to locate Chrome installation."
-  exit 1
+  echo "No Chrome installation found! Please check the logs."
+  echo "Listing contents of puppeteer cache directory:"
+  find /opt/render/.cache/puppeteer -type d
 fi
 
 echo "Build completed" 

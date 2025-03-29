@@ -4,7 +4,7 @@ const nodeHtmlToImage = require('node-html-to-image');
 const path = require('path');
 const fs = require('fs');
 const axios = require('axios');
-const puppeteerConfig = require('../puppeteer-config');
+const puppeteerHelper = require('../puppeteer-helper');
 
 const router = express.Router();
 
@@ -508,21 +508,15 @@ router.get('/generate/:address', async (req, res) => {
     const walletData = await getWalletData(address);
     const html = generateCardHtml(walletData, address, hideBalance);
     
+    // Get Puppeteer options dynamically
+    const puppeteerArgs = await puppeteerHelper.getPuppeteerOptions();
+    console.log('Launching Puppeteer with options:', JSON.stringify(puppeteerArgs));
+    
     const image = await nodeHtmlToImage({
       html,
       quality: 100,
       type: 'png',
-      puppeteerArgs: {
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-gpu',
-          '--single-process'
-        ],
-        executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
-        headless: true
-      }
+      puppeteerArgs
     });
     
     res.set('Content-Type', 'image/png');
