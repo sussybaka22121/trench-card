@@ -2,8 +2,9 @@
 # Exit on error
 set -e
 
-# Install dependencies
-npm ci
+# Install dependencies (use npm install instead of npm ci to regenerate lock file)
+echo "Installing dependencies..."
+npm install
 
 # Install Chrome with multiple approaches
 echo "Installing Chrome via Puppeteer..."

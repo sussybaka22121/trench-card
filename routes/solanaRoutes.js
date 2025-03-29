@@ -1,6 +1,7 @@
 const express = require('express');
 const { Connection, PublicKey, LAMPORTS_PER_SOL } = require('@solana/web3.js');
 const nodeHtmlToImage = require('node-html-to-image');
+const directHtmlToImage = require('../direct-html-to-image');
 const path = require('path');
 const fs = require('fs');
 const axios = require('axios');
@@ -286,6 +287,7 @@ function generateCardHtml(walletData, walletAddress, hideBalance) {
           line-height: 1.5;
         }
         .card {
+          width: 600px;
           height: 800px;
           background: #121212;
           color: white;
@@ -419,7 +421,7 @@ function generateCardHtml(walletData, walletAddress, hideBalance) {
         <div class="logo-container">
           <img src="data:image/png;base64,${fs.readFileSync(path.join(__dirname, '../public/img/logo-base64.txt'), 'utf8')}" class="logo" />
         </div>
-        ${hideBalance ? '' : ''}
+        ${hideBalance ? '<div class="privacy-badge">PRIVATE MODE</div>' : ''}
         <div class="title">Solana Wallet PNL</div>
         <div class="wallet-address">${walletAddress}</div>
         
@@ -430,7 +432,7 @@ function generateCardHtml(walletData, walletAddress, hideBalance) {
           </div>
           <div class="stat-box">
             <div class="stat-title">24h Gains/Loss</div>
-            <div class="stat-value" style="color: ${totalGainColor}">$${walletData.totalGains}</div>
+            <div class="stat-value" style="color: ${totalGainColor}">$${maskValue(walletData.totalGains)}</div>
           </div>
           <div class="stat-box">
             <div class="stat-title">24h Change %</div>
@@ -508,16 +510,32 @@ router.get('/generate/:address', async (req, res) => {
     const walletData = await getWalletData(address);
     const html = generateCardHtml(walletData, address, hideBalance);
     
-    // Get Puppeteer options dynamically
-    const puppeteerArgs = await puppeteerHelper.getPuppeteerOptions();
-    console.log('Launching Puppeteer with options:', JSON.stringify(puppeteerArgs));
+    let image;
     
-    const image = await nodeHtmlToImage({
-      html,
-      quality: 100,
-      type: 'png',
-      puppeteerArgs
-    });
+    try {
+      // Try the direct method first
+      console.log('Trying direct HTML to image conversion...');
+      image = await directHtmlToImage(html, {
+        quality: 100,
+        type: 'png'
+      });
+      console.log('Direct HTML to image conversion successful');
+    } catch (directError) {
+      console.error('Direct HTML to image conversion failed:', directError);
+      
+      // Fall back to node-html-to-image
+      console.log('Falling back to node-html-to-image...');
+      const puppeteerArgs = await puppeteerHelper.getPuppeteerOptions();
+      console.log('Using puppeteer options:', JSON.stringify(puppeteerArgs));
+      
+      image = await nodeHtmlToImage({
+        html,
+        quality: 100,
+        type: 'png',
+        puppeteerArgs
+      });
+      console.log('node-html-to-image conversion successful');
+    }
     
     res.set('Content-Type', 'image/png');
     res.send(image);

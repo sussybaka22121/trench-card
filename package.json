@@ -21,6 +21,7 @@
     "express": "^4.21.2",
     "morgan": "^1.10.0",
     "node-html-to-image": "^5.0.0",
+    "puppeteer": "^21.0.0",
     "puppeteer-chromium-resolver": "^20.0.0"
   },
   "devDependencies": {
